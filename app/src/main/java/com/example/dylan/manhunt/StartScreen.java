@@ -29,12 +29,12 @@ public class StartScreen extends Activity {
         // Instanciating an array list (you don't need to do this,
         // you already have yours).
         List<String> your_array_list = new ArrayList<String>();
-        your_array_list.add("Dylan_Foster");
-        your_array_list.add("William_Kreahling");
-        your_array_list.add("John_Burrell");
-        your_array_list.add("Charles_Manson");
-        your_array_list.add("Jeffery_Dahmer");
-        your_array_list.add("Princess_Peach");
+        your_array_list.add("Dylan Foster");
+        your_array_list.add("William Kreahling");
+        your_array_list.add("John Burrell");
+        your_array_list.add("Charles Manson");
+        your_array_list.add("Jeffery Dahmer");
+        your_array_list.add("Princess Peach");
 
         // This is the array adapter, it takes the context of the activity as a
         // first parameter, the type of list view as a second parameter and your
