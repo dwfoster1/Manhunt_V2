@@ -1,7 +1,12 @@
 package com.example.dylan.manhunt;
 
+import android.Manifest;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,11 +26,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements
+
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
     public static final String TAG = MapsActivity.class.getSimpleName();
+
+    LocationManager lm;
+    double lat = 35.30990511001521, long1 = -83.18256941623986;    //Defining Latitude & Longitude
+    float radius = 10;                         //Defining Radius
 
     /*
      * Define a request code to send to Google Play services
@@ -42,6 +52,26 @@ public class MapsActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Intent i = new Intent("com.example.dylan.manhunt.proximityalert");
+
+        //Custom Action
+        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), -1, i, 0);
+
+        //-1 means alert never expires
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+            return;
+        }
+        lm.addProximityAlert(lat, long1, radius, -1, pi);
+
         setUpMapIfNeeded();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -127,12 +157,6 @@ public class MapsActivity extends FragmentActivity implements
 
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title("Current Location"));
-        //MarkerOptions options = new MarkerOptions()
-        //        .position(latLng)
-        //        .title("I am here!");
-        //mMap.addMarker(options);
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         CameraUpdate center = CameraUpdateFactory.newLatLng(latLng);
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(18);
 

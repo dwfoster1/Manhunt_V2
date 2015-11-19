@@ -34,44 +34,6 @@ public class YouAreBeingHunted extends Activity {
 
         timerCount = new MyCount(11 * 1000, 1000);
         timerCount.start();
-        /**
-        timerTextView = (TextView) findViewById(R.id.timer);
-
-        Button b = (Button) findViewById(R.id.button_start);
-        b.setText("start");
-        b.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Button b = (Button) v;
-                if (b.getText().equals("Proceed to map")) {
-                    timerHandler.removeCallbacks(timerRunnable);
-                    b.setText("start");
-                } else {
-                    startTime = System.currentTimeMillis();
-                    timerHandler.postDelayed(timerRunnable, 0);
-                    b.setText("Proceed to map");
-                }
-            }
-        });
-
-
-
-
-        Thread timerThread = new Thread(){
-            public void run(){
-                try{
-                    sleep(5000);
-                }catch(InterruptedException e){
-                    e.printStackTrace();
-                }finally{
-                    Intent intent = new Intent(YouAreBeingHunted.this, TimesUp.class);
-                    startActivity(intent);
-                }
-            }
-        };
-        timerThread.start();*/
-
     }
 
     public class MyCount extends CountDownTimer {
@@ -86,17 +48,10 @@ public class YouAreBeingHunted extends Activity {
             timerValue.setTextSize(50);
 
             TranslateAnimation trans = new TranslateAnimation(0, 0, 0, 1600);
-            trans.setDuration(6000);
+            trans.setDuration(3000);
             trans.setInterpolator(new AccelerateInterpolator(1.0f));
             timerValue.startAnimation(trans);
             onAnimationEnd();
-
-
-
-
-            //b
-            //Intent intent = new Intent(YouAreBeingHunted.this, MapsActivity.class);
-            //startActivity(intent);
         }
 
 
@@ -113,15 +68,6 @@ public class YouAreBeingHunted extends Activity {
 
     }
 
-/**
-    @Override
-    public void onPause() {
-        super.onPause();
-        timerHandler.removeCallbacks(timerRunnable);
-        Button b = (Button)findViewById(R.id.button);
-        b.setText("start");
-    }
-*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
