@@ -3,13 +3,16 @@ package com.example.dylan.manhunt;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,6 +26,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements
@@ -34,8 +38,18 @@ public class MapsActivity extends FragmentActivity implements
     public static final String TAG = MapsActivity.class.getSimpleName();
 
     LocationManager lm;
-    double lat = 35.30990511001521, long1 = -83.18256941623986;    //Defining Latitude & Longitude
-    float radius = 10;                         //Defining Radius
+    double lat = 35.31205228, long1 = -83.18095431;    //Defining Latitude & Longitude
+
+    private static final long POINT_RADIUS = 3; // in Meters
+    private static final long PROX_ALERT_EXPIRATION = -1;
+
+    //private static final String POINT_LATITUDE_KEY = "POINT_LATITUDE_KEY";
+    //private static final String POINT_LONGITUDE_KEY = "POINT_LONGITUDE_KEY";
+
+    private static final String PROX_ALERT_INTENT =
+            "com.example.dylan.manhunt.ProximityReceiver";
+
+    private static final double STEP_SIZE = .00000000000002;
 
     /*
      * Define a request code to send to Google Play services
@@ -54,25 +68,41 @@ public class MapsActivity extends FragmentActivity implements
         setContentView(R.layout.activity_maps);
 
         lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Intent i = new Intent("com.example.dylan.manhunt.proximityalert");
+        //Intent i = new Intent("com.example.dylan.manhunt.ProximityReceiver");
 
         //Custom Action
-        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), -1, i, 0);
+        //PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), -1, i, 0);
 
         //-1 means alert never expires
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
-            return;
-        }
-        lm.addProximityAlert(lat, long1, radius, -1, pi);
+        //if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // TODO: Consider calling
+        //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+        // here to request the missing permissions, and then overriding
+        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        //                                          int[] grantResults)
+        // to handle the case where the user grants the permission. See the documentation
+        // for Activity#requestPermissions for more details.
+        //    return;
+        //}
 
-        setUpMapIfNeeded();
+        // marker 1 gs_icon location, within 3 meters, never removed, pending intent
+        Intent intent = new Intent(PROX_ALERT_INTENT);
+        PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        lm.addProximityAlert(
+                lat, // the latitude of the central point of the alert region
+                long1, // the longitude of the central point of the alert region
+                POINT_RADIUS, // the radius of the central point of the alert region, in meters
+                PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration
+                proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
+        );
+
+        IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
+        registerReceiver(new ProximityReceiver(), filter);
+
+
+
+    setUpMapIfNeeded();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -86,6 +116,30 @@ public class MapsActivity extends FragmentActivity implements
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
     }
+
+    /**public void moveMarkerRandomly(Marker mark) {  // could write this in the Marker class as a function of Marker, so you can do aMarker.moveMarkerRandomly() instead.
+        //need to define constant: STEP_SIZE, bigger number means a larger jump in the point and faster movement, smaller number means smoother movement, this code should update the position of the marker like the person took a step, and should be called multiple times a second for smooth movement, or every few seconds with a larger step size for a jumpy movement, but more efficient.
+
+        Point oldLocation = mark.();   //assuming a location returns a point containing an X,Y coordinates of the marker
+        Point newLocation = new Point(); //will later hold the value of the new location
+        Boolean flag = true;
+
+        //because of the loop below, it would technically be correct to throw an error here if the "oldLocation" was off campus already, since if a marker which is off campus for any reason is ever passed here it will cause an infinite loop; I'm lazy and not writing here though :x
+
+        while(flag) { //need to loop in case we randomly step off campus, then instead try to step randomly in another direction to remain on campus
+            xStep = (rand.random() * STEP_SIZE * 2) - STEP_SIZE ;
+            yStep = (rand.random() * STEP_SIZE * 2) - STEP_SIZE;
+            newLocation = oldLocation + new Point(xStep, yStep) //I /think/ you can add points like this? if not then: = new Point(oldLocation.x() + xStep, oldLocation.y() + yStep());
+            flag = !isOnCampus(newLocation);
+        }
+
+        mark.setPosition(new LatLng(newLocation));  //I'm unsure if this is a function you need to define yourself, or find in an API, but it's important, and will be needed to randomly move the points as well as to move them when they are actual people, this should be the function that actually in the code changes the lat/lon of the marker once we know the new location to move it to
+    }
+
+    public boolean isOnCampus(Point2D point) {
+        return point.distance(locProx) < RADIUS;
+    }
+     */
 
     @Override
     protected void onResume() {
@@ -183,11 +237,35 @@ public class MapsActivity extends FragmentActivity implements
         MarkerOptions marker3 = new MarkerOptions().position(loc3).title("Prey!").draggable(true);
         marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.sm_icon));
 
+        LatLng loc4 = new LatLng(35.31205228, -83.18095431);
+        MarkerOptions marker4 = new MarkerOptions().position(loc4).title("Hunter!").draggable(true);
+        marker4.icon(BitmapDescriptorFactory.fromResource(R.drawable.gs_icon));
+
 
         mMap.addMarker(marker);
         mMap.addMarker(marker2);
         mMap.addMarker(marker3);
+        mMap.addMarker(marker4);
+
     }
+
+   /** private void addProximityAlert(double latitude, double longitude) {
+
+        Intent intent = new Intent(PROX_ALERT_INTENT);
+        PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        lm.addProximityAlert(
+                latitude, // the latitude of the central point of the alert region
+                longitude, // the longitude of the central point of the alert region
+                POINT_RADIUS, // the radius of the central point of the alert region, in meters
+                PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration
+                proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
+        );
+
+        IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
+        registerReceiver(new ProximityReceiver(), filter);
+
+    }*/
 
     @Override
     public void onConnected(Bundle bundle) {
