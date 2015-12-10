@@ -2,13 +2,17 @@ package com.example.dylan.manhunt;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 
+/**
+ * Activity that handles button presses for the Login Screen screen of Manhunt.
+ *
+ * @author Dylan
+ * @version 12/10/15
+ */
 public class LoginScreen extends Activity {
 
     @Override
@@ -17,13 +21,23 @@ public class LoginScreen extends Activity {
         setContentView(R.layout.activity_login_screen);
     }
 
-    //dont need a listener for the buttons since the onClick delcared in text iml
+    /**
+     * I don't need a listener for the buttons since the onClick declared in text iml and this
+     * automatically prepares the event of pressing a button to go to CreateGame screen.
+     *
+     * @param view - view that is being clicked
+     */
     public void onClick(View view) {
         Intent i = new Intent(this, CreateGame.class);
         startActivity(i);
     }
 
     @Override
+    /**
+     * Default android method that displays information on an action bar if it is present.
+     *
+     * @param menu - menu that appears as an action bar
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_login_screen, menu);
@@ -31,10 +45,15 @@ public class LoginScreen extends Activity {
     }
 
     @Override
+    /**
+     * Handle action bar item clicks here. The action bar will automatically handle
+     * clicks on the Home/Up button, so long as you specify a parent activity in
+     * AndroidManifest.xml.
+     *
+     * @param item - Items present inside action bar
+     * @return item - item that was selected
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

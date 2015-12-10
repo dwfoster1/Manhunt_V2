@@ -14,12 +14,26 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+/**
+ * Displays the SetupGame screen and creates customizable game features for players to enhance
+ * their experience.
+ *
+ * @author Dylan
+ * @version 12/10/15
+ */
 public class SetupGame extends Activity {
 
+    /** Spinners that will have drop downs with customizable options */
     private Spinner spinner1, spinner2, spinner3;
+
+    /** Buttons that start the game or go to previous screen */
     Button start, back;
 
     @Override
+    /**
+     * Built in method in android that builds necessary instance state and displays the layout and
+     * also incorporates an onClick listener that fires off the intent to start the next screen.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_game);
@@ -28,8 +42,12 @@ public class SetupGame extends Activity {
         start.setOnClickListener(new View.OnClickListener() {
 
             @Override
+            /**
+             * Listener that takes us to the appropriate screen.
+             *
+             * @param view - the change in views when going to new activity
+             */
             public void onClick(View view) {
-                // TODO Auto-generated method stub
                 Intent i = new Intent(getApplicationContext(), YouAreBeingHunted.class);
                 startActivity(i);
             }
@@ -40,26 +58,34 @@ public class SetupGame extends Activity {
         addListenerOnSpinnerItemSelection();
     }
 
-    // add items into spinner dynamically
+    /**
+     * Add items into spinners dynamically.
+     */
     public void addItemsOnSpinner3() {
-
         spinner3 = (Spinner) findViewById(R.id.spinner3);
+
         List<String> list = new ArrayList<String>();
         list.add("1 Hunter");
         list.add("2 Hunters");
         list.add("3 Hunters");
+
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner3.setAdapter(dataAdapter);
     }
 
+    /**
+     * Testing method to display contents of what was selected.
+     */
     public void addListenerOnSpinnerItemSelection() {
         spinner1 = (Spinner) findViewById(R.id.spinner1);
-        spinner1.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+        //spinner1.setOnItemSelectedListener(new CustomOnItemSelectedListener());
     }
 
-    // get the selected dropdown list value
+    /**
+     * Gets the selected dropdown list value and displays a toast once pressed.
+     */
     public void addListenerOnButton() {
 
         spinner1 = (Spinner) findViewById(R.id.spinner1);
@@ -69,6 +95,11 @@ public class SetupGame extends Activity {
         back.setOnClickListener(new OnClickListener() {
 
             @Override
+            /**
+             * Listener that takes us to the appropriate screen.
+             *
+             * @param view - the change in views when going to new activity
+             */
             public void onClick(View v) {
 
                 Toast.makeText(SetupGame.this,
@@ -83,6 +114,11 @@ public class SetupGame extends Activity {
     }
 
     @Override
+    /**
+     * Default android method that displays information on an action bar if it is present.
+     *
+     * @param menu - menu that appears as an action bar
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_setup_game, menu);
@@ -90,10 +126,15 @@ public class SetupGame extends Activity {
     }
 
     @Override
+    /**
+     * Handle action bar item clicks here. The action bar will automatically handle
+     * clicks on the Home/Up button, so long as you specify a parent activity in
+     * AndroidManifest.xml.
+     *
+     * @param item - Items present inside action bar
+     * @return item - item that was selected
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

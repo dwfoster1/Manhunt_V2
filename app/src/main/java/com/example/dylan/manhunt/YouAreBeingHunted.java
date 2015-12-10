@@ -8,19 +8,31 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.TextView;
-import android.os.Handler;
-import android.view.View;
 import android.app.Activity;
 
+/**
+ * This class displays the contents of YouAreBeingHunted if a player is chosen to be a survivor.
+ *
+ * @author Dylan
+ * @version 12/10/15
+ */
 public class YouAreBeingHunted extends Activity {
 
+    /** My particular layout for this activity */
     ViewGroup dylansLayout;
+
+    /** Duration of the timer countdown */
     MyCount timerCount;
+
+    /** Value of the timer */
     private TextView timerValue;
 
     @Override
+    /**
+     * Built in method in android that builds necessary instance state and displays the layout and
+     * also sets a timer for the countdown
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_you_are_being_hunted);
@@ -36,14 +48,25 @@ public class YouAreBeingHunted extends Activity {
         timerCount.start();
     }
 
+    /**
+     * My timer and the corresponding code.
+     */
     public class MyCount extends CountDownTimer {
+        /**
+         * What is counting down and in what interval.
+         *
+         * @param millisInFuture - How long it will wait
+         * @param countDownInterval - How long it will count for
+         */
         public MyCount(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
         }
 
         @Override
+        /**
+         * Displays a small box animation once timer has completed
+         */
         public void onFinish() {
-            //some script here
             timerValue.setText("-BEGIN HUNT-");
             timerValue.setTextSize(50);
 
@@ -54,21 +77,32 @@ public class YouAreBeingHunted extends Activity {
             onAnimationEnd();
         }
 
-
+        /**
+         * Fires intent to go to next screen once the animation ends.
+         */
         public void onAnimationEnd() {
             Intent intent = new Intent(YouAreBeingHunted.this, MapsActivity.class);
             startActivity(intent);
         }
 
         @Override
+        /**
+         * Updates the timer countdown
+         *
+         * @param millisUntilFinished - the seconds until it completes counting down
+         */
         public void onTick(long millisUntilFinished) {
-            //some script here
             timerValue.setText("Time Left: " + millisUntilFinished / 1000);
         }
 
     }
 
     @Override
+    /**
+     * Default android method that displays information on an action bar if it is present.
+     *
+     * @param menu - menu that appears as an action bar
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_you_are_being_hunted, menu);
@@ -76,6 +110,14 @@ public class YouAreBeingHunted extends Activity {
     }
 
     @Override
+    /**
+     * Handle action bar item clicks here. The action bar will automatically handle
+     * clicks on the Home/Up button, so long as you specify a parent activity in
+     * AndroidManifest.xml.
+     *
+     * @param item - Items present inside action bar
+     * @return item - item that was selected
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
