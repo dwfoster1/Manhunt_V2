@@ -40,4 +40,6 @@
     </string-array>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_proximity_alert">ProximityAlertActivity</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_register">Register</string>
 </resources>

@@ -97,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements
         Intent intent = new Intent(PROX_ALERT_INTENT);
         PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
-        // needs a permission check eventually
+        // needs a permission check eventually, but works without (looks scary)
         lm.addProximityAlert(
                 lat, // the latitude of the central point of the alert region
                 long1, // the longitude of the central point of the alert region
@@ -112,6 +112,7 @@ public class MapsActivity extends FragmentActivity implements
         registerReceiver(new ProximityReceiver(), filter);
 
         setUpMapIfNeeded();
+        //ReadXml.parse();
 
         // Create the api client
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -334,6 +335,9 @@ public class MapsActivity extends FragmentActivity implements
      */
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
+        String type = "request";
+        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+        backgroundWorker.execute(type);
 
     }
 }
